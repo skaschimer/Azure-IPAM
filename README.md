@@ -1,5 +1,164 @@
-this is an IP adddress Management tool desired to help you mamnage your ip addresses in Azure.
+# Azure IPAM Dashboard
 
-It will display Azure Network IP's used (Private and Public) including Public IP Type (Basic vs Standard) in a web browser-based app.
+A web-based IP Address Management (IPAM) tool for Azure that provides comprehensive visibility into your IP address usage across tenants, subscriptions, and resource groups.
 
+## Features
 
+### 📋 IP Address Inventory
+- View all **public and private IP addresses** across your Azure tenant
+- Filter by subscription, resource group, IP type, and allocation method
+- See which resources are using each IP address
+- Click-through to Azure Portal for detailed resource management
+- Export to CSV for reporting
+
+### 🔲 Subnet Utilization
+- Visual **utilization graphs** for each subnet (color-coded: 🟢 green, 🟡 amber, 🔴 red)
+- Group by VNet with expandable/collapsible views
+- Track **used vs. available IPs** in real-time
+- Identify subnets approaching exhaustion
+- View delegations, NSG, and route table associations
+
+### ⚠️ CIDR Conflict Detection
+- Automatically detect **overlapping address spaces** across VNets
+- Identify subset/superset conflicts
+- Impact analysis for each conflict
+- Cross-subscription conflict detection
+
+### 📊 Events & Activity Logs
+- Track network resource changes (create, update, delete)
+- Monitor **IP exhaustion warnings**
+- **Quota usage alerts** for public IPs
+- Filter by event type, time range, and subscription
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- Azure CLI (`az login`)
+- Azure subscription with network resources
+
+### Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/your-org/azure-ipam.git
+cd azure-ipam
+
+# Set up Azure credentials
+cd deploy/local
+cp .env.example .env
+# Edit .env with your Azure credentials
+
+# Install and run
+cd ../../frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser.
+
+See [Local Deployment Guide](deploy/local/README.md) for detailed instructions.
+
+## Deployment Options
+
+| Deployment | Description | Guide |
+|------------|-------------|-------|
+| **Local** | Docker Compose or native Node.js | [deploy/local/](deploy/local/) |
+| **Azure Static Web Apps** | Serverless, built-in auth | [deploy/azure-swa/](deploy/azure-swa/) |
+| **Azure App Service** | Full PaaS with custom domains | [deploy/azure-appservice/](deploy/azure-appservice/) |
+| **Azure Container Apps** | Containerized with Dapr | [deploy/azure-container-apps/](deploy/azure-container-apps/) |
+| **Azure Kubernetes Service** | Helm chart deployment | [deploy/azure-aks/](deploy/azure-aks/) |
+
+## Azure Permissions
+
+This tool requires read-only access to Azure networking resources. A custom "IPAM Reader" role is provided.
+
+See [AZURE-PERMISSIONS.md](docs/AZURE-PERMISSIONS.md) for:
+- Custom role definition
+- Service principal setup
+- Managed identity configuration
+- Multi-subscription access
+
+### Quick Role Setup
+
+```bash
+# Create the IPAM Reader custom role
+az role definition create --role-definition @ipam-reader-role.json
+
+# Create service principal and assign role
+az ad sp create-for-rbac --name "ipam-app" --skip-assignment
+az role assignment create --assignee "<APP_ID>" --role "IPAM Reader" --scope "/providers/Microsoft.Management/managementGroups/<TENANT_ID>"
+```
+
+## Architecture
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│                 │     │                 │     │                  │
+│  React Frontend │────▶│  Azure Functions│────▶│  Azure Resource  │
+│  (TypeScript)   │     │  API            │     │  Graph           │
+│                 │     │                 │     │                  │
+└─────────────────┘     └─────────────────┘     └──────────────────┘
+        │                       │                       │
+        │                       │                       │
+        ▼                       ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│  MSAL.js        │     │  Azure Identity │     │  Activity Logs   │
+│  (User Auth)    │     │  (API Auth)     │     │  API             │
+└─────────────────┘     └─────────────────┘     └──────────────────┘
+```
+
+## Technology Stack
+
+- **Frontend**: React 18, TypeScript, Tailwind CSS, AG Grid, Recharts
+- **Backend**: Azure Functions (Node.js), Azure SDK
+- **Authentication**: MSAL.js, Azure AD / Entra ID
+- **Data**: Azure Resource Graph, Azure Activity Logs
+
+## Project Structure
+
+```
+Azure-IPAM/
+├── frontend/                 # React + TypeScript frontend
+│   ├── src/
+│   │   ├── components/       # UI components
+│   │   ├── pages/            # Page components
+│   │   ├── services/         # API client
+│   │   └── types/            # TypeScript types
+│   └── package.json
+├── api/                      # Azure Functions backend
+│   ├── src/
+│   │   ├── functions/        # HTTP function handlers
+│   │   └── shared/           # Shared utilities
+│   └── package.json
+├── deploy/                   # Deployment configurations
+│   ├── local/                # Local development
+│   ├── azure-swa/            # Azure Static Web Apps
+│   ├── azure-appservice/     # Azure App Service
+│   ├── azure-container-apps/ # Azure Container Apps
+│   └── azure-aks/            # Azure Kubernetes Service
+├── docs/                     # Documentation
+│   └── AZURE-PERMISSIONS.md  # Permissions guide
+└── README.md
+```
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `AZURE_TENANT_ID` | Azure AD tenant ID | Yes |
+| `AZURE_CLIENT_ID` | Service principal or app registration ID | Yes |
+| `AZURE_CLIENT_SECRET` | Service principal secret (not needed for managed identity) | Depends |
+| `VITE_AZURE_CLIENT_ID` | Frontend auth client ID | Yes |
+| `VITE_AZURE_TENANT_ID` | Frontend tenant ID | Yes |
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines before submitting a PR.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
