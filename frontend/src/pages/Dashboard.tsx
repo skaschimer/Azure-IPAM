@@ -205,6 +205,7 @@ export default function Dashboard({ filterState, refreshMode, lastRefresh, onSub
           value={loading ? '...' : quickStats.totalIPs} 
           icon={<Globe className="w-6 h-6 text-azure-500" />}
           loading={loading}
+          onClick={() => setActiveTab('ips')}
         />
         <StatCard 
           label="Public IPs" 
@@ -212,12 +213,14 @@ export default function Dashboard({ filterState, refreshMode, lastRefresh, onSub
           subValue={loading ? '' : `${quickStats.assignedPublicIPs} assigned`}
           icon={<Cloud className="w-6 h-6 text-blue-500" />}
           loading={loading}
+          onClick={() => setActiveTab('ips')}
         />
         <StatCard 
           label="VNets" 
           value={loading ? '...' : quickStats.vnets} 
           icon={<Network className="w-6 h-6 text-purple-500" />}
           loading={loading}
+          onClick={() => setActiveTab('subnets')}
         />
         <StatCard 
           label="Subnets" 
@@ -226,6 +229,7 @@ export default function Dashboard({ filterState, refreshMode, lastRefresh, onSub
           icon={<Layout className="w-6 h-6 text-green-500" />}
           loading={loading}
           alert={!loading && quickStats.criticalSubnets > 0}
+          onClick={() => setActiveTab('subnets')}
         />
         <StatCard 
           label="Conflicts" 
@@ -233,6 +237,7 @@ export default function Dashboard({ filterState, refreshMode, lastRefresh, onSub
           icon={<AlertTriangle className="w-6 h-6 text-amber-500" />}
           loading={loading}
           alert={!loading && quickStats.conflicts > 0}
+          onClick={() => setActiveTab('conflicts')}
         />
         <StatCard 
           label="Orphans" 
@@ -240,6 +245,7 @@ export default function Dashboard({ filterState, refreshMode, lastRefresh, onSub
           icon={<Trash2 className="w-6 h-6 text-red-500" />}
           loading={loading}
           alert={!loading && quickStats.orphanResources > 0}
+          onClick={() => setActiveTab('orphans')}
         />
       </div>
 
@@ -293,6 +299,7 @@ export default function Dashboard({ filterState, refreshMode, lastRefresh, onSub
                 events={events}
                 subscriptions={subscriptions}
                 orphanResources={orphanResources}
+                onNavigate={setActiveTab}
               />
             )}
             {activeTab === 'ips' && <IPAddressesTab ipAddresses={filteredIPs} />}
@@ -314,13 +321,17 @@ interface StatCardProps {
   icon: React.ReactNode
   loading?: boolean
   alert?: boolean
+  onClick?: () => void
 }
 
-function StatCard({ label, value, subValue, icon, loading, alert }: StatCardProps) {
+function StatCard({ label, value, subValue, icon, loading, alert, onClick }: StatCardProps) {
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border transition-all hover:shadow-md ${
-      alert ? 'border-red-200 dark:border-red-800' : 'border-gray-100 dark:border-gray-700'
-    }`}>
+    <div 
+      onClick={onClick}
+      className={`bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border transition-all hover:shadow-md cursor-pointer hover:scale-105 ${
+        alert ? 'border-red-200 dark:border-red-800' : 'border-gray-100 dark:border-gray-700'
+      }`}
+    >
       <div className="flex items-center justify-between">
         {icon}
         {alert && <AlertTriangle className="w-4 h-4 text-red-500" />}

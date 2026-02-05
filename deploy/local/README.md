@@ -22,8 +22,8 @@ cp .env.example .env
 
 Edit `.env` with your values:
 ```
-AZURE_TENANT_ID=21ef3553-ac23-4d67-a0b7-fa3d7d0d75e1
-AZURE_CLIENT_ID=765f4e3d-b2d1-4c1f-b654-c1957601a62d
+AZURE_TENANT_ID=your-azure-tenant-id
+AZURE_CLIENT_ID=your-service-principal-client-id
 AZURE_CLIENT_SECRET=<your-client-secret>
 ```
 

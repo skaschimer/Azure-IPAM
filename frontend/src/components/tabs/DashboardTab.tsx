@@ -34,6 +34,7 @@ interface DashboardTabProps {
   events: IPAMEvent[]
   subscriptions: Subscription[]
   orphanResources: OrphanResource[]
+  onNavigate?: (tab: 'ips' | 'subnets' | 'conflicts' | 'events' | 'orphans') => void
 }
 
 export default function DashboardTab({ 
@@ -42,7 +43,8 @@ export default function DashboardTab({
   conflicts, 
   events, 
   subscriptions,
-  orphanResources 
+  orphanResources,
+  onNavigate
 }: DashboardTabProps) {
   
   // Track theme changes for smooth transitions
@@ -257,6 +259,7 @@ export default function DashboardTab({
           label="Total IPs"
           value={stats.totalIPs}
           color="blue"
+          onClick={() => onNavigate?.('ips')}
         />
         <SummaryCard 
           icon={<Cloud className="w-5 h-5" />}
@@ -264,12 +267,14 @@ export default function DashboardTab({
           value={stats.publicIPs}
           subValue={`${stats.assignedPublic} assigned`}
           color="sky"
+          onClick={() => onNavigate?.('ips')}
         />
         <SummaryCard 
           icon={<Server className="w-5 h-5" />}
           label="Private IPs"
           value={stats.privateIPs}
           color="purple"
+          onClick={() => onNavigate?.('ips')}
         />
         <SummaryCard 
           icon={<Network className="w-5 h-5" />}
@@ -277,6 +282,7 @@ export default function DashboardTab({
           value={stats.vnets}
           subValue={`${stats.totalSubnets} subnets`}
           color="green"
+          onClick={() => onNavigate?.('subnets')}
         />
         <SummaryCard 
           icon={<AlertTriangle className="w-5 h-5" />}
@@ -284,6 +290,7 @@ export default function DashboardTab({
           value={stats.conflicts}
           color={stats.conflicts > 0 ? "red" : "gray"}
           alert={stats.conflicts > 0}
+          onClick={() => onNavigate?.('conflicts')}
         />
         <SummaryCard 
           icon={<Trash2 className="w-5 h-5" />}
@@ -291,6 +298,7 @@ export default function DashboardTab({
           value={stats.orphans}
           color={stats.orphans > 0 ? "amber" : "gray"}
           alert={stats.orphans > 0}
+          onClick={() => onNavigate?.('orphans')}
         />
       </div>
 
@@ -517,6 +525,7 @@ interface SummaryCardProps {
   subValue?: string
   color: 'blue' | 'sky' | 'purple' | 'green' | 'red' | 'amber' | 'gray'
   alert?: boolean
+  onClick?: () => void
 }
 
 const colorClasses = {
@@ -529,9 +538,12 @@ const colorClasses = {
   gray: 'bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400',
 }
 
-function SummaryCard({ icon, label, value, subValue, color, alert }: SummaryCardProps) {
+function SummaryCard({ icon, label, value, subValue, color, alert, onClick }: SummaryCardProps) {
   return (
-    <div className={`rounded-xl p-4 ${colorClasses[color]} ${alert ? 'ring-2 ring-offset-2 ring-red-400 dark:ring-offset-gray-900' : ''}`}>
+    <div 
+      onClick={onClick}
+      className={`rounded-xl p-4 cursor-pointer transition-transform hover:scale-105 ${colorClasses[color]} ${alert ? 'ring-2 ring-offset-2 ring-red-400 dark:ring-offset-gray-900' : ''}`}
+    >
       <div className="flex items-center gap-2 mb-2">
         {icon}
         <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
