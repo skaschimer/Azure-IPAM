@@ -64,11 +64,50 @@ See [Local Deployment Guide](deploy/local/README.md) for detailed instructions.
 
 | Deployment | Description | Guide |
 |------------|-------------|-------|
-| **Local** | Docker Compose or native Node.js | [deploy/local/](deploy/local/) |
-| **Azure Static Web Apps** | Serverless, built-in auth | [deploy/azure-swa/](deploy/azure-swa/) |
-| **Azure App Service** | Full PaaS with custom domains | [deploy/azure-appservice/](deploy/azure-appservice/) |
-| **Azure Container Apps** | Containerized with Dapr | [deploy/azure-container-apps/](deploy/azure-container-apps/) |
-| **Azure Kubernetes Service** | Helm chart deployment | [deploy/azure-aks/](deploy/azure-aks/) |
+| **Local Development** | Native Node.js with hot reload | [deploy/local/](deploy/local/) |
+| **Docker** | Production-ready containers with nginx | [deploy/docker/](deploy/docker/) |
+| **Kubernetes** | Kustomize manifests with HPA, PDB, ingress | [deploy/kubernetes/](deploy/kubernetes/) |
+| **Azure AKS** | Full Azure integration with Key Vault, ACR, Managed Identity | [deploy/azure-aks/](deploy/azure-aks/) |
+
+### Docker Deployment
+
+```bash
+cd deploy/docker
+cp .env.example .env
+# Edit .env with your Azure credentials
+docker-compose build
+docker-compose up -d
+# Access at http://localhost:8080
+```
+
+### Kubernetes Deployment
+
+```bash
+# Configure secrets
+kubectl create namespace azure-ipam
+kubectl create secret generic azure-ipam-secrets \
+  --namespace azure-ipam \
+  --from-literal=AZURE_TENANT_ID=<your-tenant-id> \
+  --from-literal=AZURE_CLIENT_ID=<your-client-id> \
+  --from-literal=AZURE_CLIENT_SECRET=<your-secret>
+
+# Deploy with Kustomize
+kubectl apply -k deploy/kubernetes/base
+```
+
+### Azure AKS Deployment
+
+```bash
+cd deploy/azure-aks
+
+# Option 1: Automated (creates all Azure resources)
+./deploy.sh
+
+# Option 2: Infrastructure as Code
+az deployment group create \
+  --resource-group rg-azure-ipam \
+  --template-file infrastructure/main.bicep
+```
 
 ## Azure Permissions
 
@@ -133,13 +172,16 @@ Azure-IPAM/
 │   │   └── shared/           # Shared utilities
 │   └── package.json
 ├── deploy/                   # Deployment configurations
-│   ├── local/                # Local development
-│   ├── azure-swa/            # Azure Static Web Apps
-│   ├── azure-appservice/     # Azure App Service
-│   ├── azure-container-apps/ # Azure Container Apps
-│   └── azure-aks/            # Azure Kubernetes Service
+│   ├── local/                # Local development (docker-compose)
+│   ├── docker/               # Production Docker containers
+│   ├── kubernetes/           # Generic K8s manifests (Kustomize)
+│   │   └── base/             # Base manifests
+│   └── azure-aks/            # Azure AKS with Key Vault, ACR, Bicep
+│       ├── infrastructure/   # Bicep templates
+│       └── patches/          # AKS-specific Kustomize patches
 ├── docs/                     # Documentation
 │   └── AZURE-PERMISSIONS.md  # Permissions guide
+├── ipam-reader-role.json     # Custom Azure role definition
 └── README.md
 ```
 
