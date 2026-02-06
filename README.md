@@ -2,6 +2,8 @@
 
 A web-based IP Address Management (IPAM) tool for Azure that provides comprehensive visibility into your IP address usage across tenants, subscriptions, and resource groups.
 
+![Azure IPAM Dashboard](assets/azure-ipam-screenshots1.png)
+
 ## Features
 
 ### 📋 IP Address Inventory
