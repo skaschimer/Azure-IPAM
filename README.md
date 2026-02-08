@@ -2,6 +2,8 @@
 
 A web-based IP Address Management (IPAM) tool for Azure that provides comprehensive visibility into your IP address usage across tenants, subscriptions, and resource groups.
 
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fbenarch%2FAzure-IPAM%2Fmain%2Fdeploy%2Fazure-container-apps%2Fazuredeploy.json)
+
 ![Azure IPAM Dashboard](assets/azure-ipam-screenshots1.png)
 
 ## Features
@@ -66,10 +68,26 @@ See [Local Deployment Guide](deploy/local/README.md) for detailed instructions.
 
 | Deployment | Description | Guide |
 |------------|-------------|-------|
+| **Azure Container Apps** | One-click serverless deployment | [deploy/azure-container-apps/](deploy/azure-container-apps/) |
 | **Local Development** | Native Node.js with hot reload | [deploy/local/](deploy/local/) |
 | **Docker** | Production-ready containers with nginx | [deploy/docker/](deploy/docker/) |
 | **Kubernetes** | Kustomize manifests with HPA, PDB, ingress | [deploy/kubernetes/](deploy/kubernetes/) |
 | **Azure AKS** | Full Azure integration with Key Vault, ACR, Managed Identity | [deploy/azure-aks/](deploy/azure-aks/) |
+
+### Azure Container Apps (Recommended)
+
+Click the **Deploy to Azure** button above, or use Azure CLI:
+
+```bash
+# Create resource group
+az group create --name rg-azure-ipam --location eastus
+
+# Deploy (requires App Registration - see deploy/azure-container-apps/README.md)
+az deployment group create \
+  --resource-group rg-azure-ipam \
+  --template-file deploy/azure-container-apps/azuredeploy.json \
+  --parameters frontendClientId="<your-app-registration-client-id>"
+```
 
 ### Docker Deployment
 
@@ -178,6 +196,7 @@ Azure-IPAM/
 │   ├── docker/               # Production Docker containers
 │   ├── kubernetes/           # Generic K8s manifests (Kustomize)
 │   │   └── base/             # Base manifests
+│   ├── azure-container-apps/ # One-click Azure deployment (ARM)
 │   └── azure-aks/            # Azure AKS with Key Vault, ACR, Bicep
 │       ├── infrastructure/   # Bicep templates
 │       └── patches/          # AKS-specific Kustomize patches
