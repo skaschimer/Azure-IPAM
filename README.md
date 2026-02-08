@@ -4,7 +4,7 @@ A web-based IP Address Management (IPAM) tool for Azure that provides comprehens
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fbenarch%2FAzure-IPAM%2Fmain%2Fdeploy%2Fazure-container-apps%2Fazuredeploy.json)
 
-![Azure IPAM Dashboard](assets/azure-ipam-screenshots1.png)
+![Azure IPAM Dashboard](assets/azure-ipam-blurred.png)
 
 ## Features
 
