@@ -204,7 +204,7 @@
       "dependsOn": [
         "[resourceId('Microsoft.ContainerRegistry/registries', variables('acrName'))]",
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]",
-        "[resourceId('Microsoft.Authorization/roleAssignments', guid(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), variables('managedIdentityName'), 'acrpush'))]",
+        "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), 'Microsoft.Authorization/roleAssignments', guid(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), variables('managedIdentityName'), 'acrpush'))]",
         "[resourceId('Microsoft.Authorization/roleAssignments', guid(resourceGroup().id, variables('managedIdentityName'), 'contributor'))]"
       ]
     },
@@ -279,7 +279,7 @@
           "activeRevisionsMode": "Single",
           "ingress": {
             "external": true,
-            "targetPort": 7071,
+            "targetPort": 80,
             "allowInsecure": false,
             "traffic": [
               {
@@ -350,7 +350,7 @@
         "[resourceId('Microsoft.App/managedEnvironments', variables('containerAppEnvName'))]",
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]",
         "[resourceId('Microsoft.Resources/deploymentScripts', 'buildContainerImages')]",
-        "[resourceId('Microsoft.Authorization/roleAssignments', guid(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), variables('managedIdentityName'), 'acrpull'))]"
+        "[extensionResourceId(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), 'Microsoft.Authorization/roleAssignments', guid(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), variables('managedIdentityName'), 'acrpull'))]"
       ]
     },
     {
